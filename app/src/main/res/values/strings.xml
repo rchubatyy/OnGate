@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">OnGate</string>
+    <string name="check_in">Check in</string>
+    <string name="start_break">Start Break</string>
+    <string name="finish_break">Finish Break</string>
+    <string name="check_out">Check Out</string>
+    <string name="could_not_find_pin">Welcome. We could not find you by PIN. Please copy the code below and check in / out. Forward it to your Supervisor.</string>
+    <string name="could_not_connect_to_check_in">Welcome. We have trouble connecting to the server. Please copy the code below and check in / out. Forward it to your Supervisor.</string>
+</resources>
