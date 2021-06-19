@@ -51,7 +51,6 @@ public class Services{
         url += index;
         url += "-";
         url += command;
-        System.out.println(url);
         return url;
     }
 

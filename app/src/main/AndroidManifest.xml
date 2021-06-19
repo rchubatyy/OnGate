@@ -10,6 +10,7 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
     <uses-permission android:name="android.permission.REORDER_TASKS" />
+
     <uses-feature android:name="android.hardware.camera2.full" />
 
     <supports-screens
@@ -29,58 +30,51 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <activity
             android:name=".Activities.SettingsActivity"
-            android:screenOrientation="portrait"
             android:clearTaskOnLaunch="true"
             android:excludeFromRecents="true"
-            android:launchMode="singleTask">
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait">
 
         </activity>
         <activity
             android:name=".Activities.ThankYouActivity"
-            android:screenOrientation="portrait"
-            android:clearTaskOnLaunch="true"
-            android:excludeFromRecents="true"
-            android:launchMode="singleTask">
-
-        </activity>
-        <activity
-            android:name=".Activities.TakePhotoActivity"
-            android:screenOrientation="portrait"
-            android:clearTaskOnLaunch="true"
-            android:excludeFromRecents="true"
-            android:launchMode="singleTask">
-
-        </activity>
-        <activity
-            android:name=".Activities.UserPinActivity"
-            android:screenOrientation="portrait"
-            android:clearTaskOnLaunch="true"
-            android:excludeFromRecents="true"
-            android:launchMode="singleTask">
-
-        </activity>
-        <activity
-            android:name=".Activities.RegisterActivity"
-            android:screenOrientation="portrait"
-            android:clearTaskOnLaunch="true"
-            android:excludeFromRecents="true"
-            android:launchMode="singleTask">
-
-
-        </activity>
-        <activity
-            android:name=".Activities.SplashScreenActivity"
-            android:screenOrientation="portrait"
             android:clearTaskOnLaunch="true"
             android:excludeFromRecents="true"
             android:launchMode="singleTask"
+            android:screenOrientation="portrait"></activity>
+        <activity
+            android:name=".Activities.TakePhotoActivity"
+            android:clearTaskOnLaunch="true"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"></activity>
+        <activity
+            android:name=".Activities.UserPinActivity"
+            android:clearTaskOnLaunch="true"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"></activity>
+        <activity
+            android:name=".Activities.RegisterActivity"
+            android:clearTaskOnLaunch="true"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"></activity>
+        <activity
+            android:name=".Activities.SplashScreenActivity"
+            android:clearTaskOnLaunch="true"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
             android:theme="@style/SplashScreenTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.HOME" />
+                <category android:name="android.intent.category.DEFAULT" />
+
             </intent-filter>
         </activity>
 

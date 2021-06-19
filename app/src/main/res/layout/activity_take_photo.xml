@@ -13,7 +13,7 @@
         android:layout_height="0dp"
         android:layout_marginTop="25dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent="0.05"
+        app:layout_constraintHeight_percent="0.1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -24,7 +24,7 @@
         android:gravity="center"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent="0.2"
+        app:layout_constraintHeight_percent="0.18"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/logo">
 
@@ -40,7 +40,7 @@
             android:minLines="1"
             android:text="Welcome"
             android:textColor="@color/colorBackground"
-            android:textSize="20sp"
+            android:textSize="28sp"
             app:autoSizeMinTextSize="12dp"
             app:autoSizeTextType="uniform"
             app:layout_constraintEnd_toEndOf="parent"
@@ -49,18 +49,18 @@
 
         <TextView
             android:id="@+id/eventID"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="100dp"
+            android:layout_marginTop="20dp"
             android:layout_marginEnd="100dp"
             android:gravity="center"
             android:lines="1"
             android:textColor="@android:color/black"
-            android:textSize="25sp"
+            android:textSize="40sp"
             app:autoSizeMinTextSize="12dp"
             app:autoSizeTextType="uniform"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/welcome" />
 
@@ -70,9 +70,9 @@
             android:layout_height="wrap_content"
             android:backgroundTint="#95ab26"
             android:paddingStart="100dp"
-            android:paddingTop="10dp"
+            android:paddingTop="20dp"
             android:paddingEnd="100dp"
-            android:paddingBottom="10dp"
+            android:paddingBottom="20dp"
             android:text="Not you?"
             android:textSize="20sp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -86,11 +86,11 @@
         android:layout_height="0dp"
         android:layout_marginStart="100dp"
         android:layout_marginEnd="100dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginBottom="5dp"
         app:layout_constraintBottom_toTopOf="@+id/linearLayout"
-        app:layout_constraintDimensionRatio="H,3:4"
+        app:layout_constraintDimensionRatio="H,4:3"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent="0.35"
+        app:layout_constraintHeight_percent="0.38"
         app:layout_constraintStart_toStartOf="parent" />
 
     <LinearLayout
@@ -106,7 +106,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_percent="0.25"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintWidth_percent="0.8">
 
         <Button
             android:id="@+id/CHECKIN"

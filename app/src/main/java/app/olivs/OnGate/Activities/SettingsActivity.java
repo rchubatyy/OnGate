@@ -85,10 +85,10 @@ public class SettingsActivity extends AppCompatActivity implements AdapterView.O
     protected void onPause() {
         super.onPause();
 
-        /*ActivityManager activityManager = (ActivityManager) getApplicationContext()
+        ActivityManager activityManager = (ActivityManager) getApplicationContext()
                 .getSystemService(Context.ACTIVITY_SERVICE);
 
-        activityManager.moveTaskToFront(getTaskId(), 0);*/
+        activityManager.moveTaskToFront(getTaskId(), 0);
     }
 
     @Override
@@ -190,11 +190,6 @@ public class SettingsActivity extends AppCompatActivity implements AdapterView.O
                 alert.show();
                 break;
             case 6:
-                /*Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
-                mainIntent.addCategory(Intent.CATEGORY_HOME);
-                List<ResolveInfo> pkgAppsList = getPackageManager().queryIntentActivities( mainIntent, 0);
-                for (ResolveInfo pack: pkgAppsList)
-                System.out.println(pack.toString());*/
                 showProgress("Updating settings...");
                 Services.updateSettings(this, new Services.OnUpdatedSettingsListener() {
                     @Override
@@ -254,11 +249,12 @@ public class SettingsActivity extends AppCompatActivity implements AdapterView.O
             return;
         }
             CheckInRecord record = records.get(0);
-            Bitmap bm = BitmapFactory.decodeFile(record.getPhotoURL());
+            /*Bitmap bm = BitmapFactory.decodeFile(record.getPhotoURL());
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             bm.compress(Bitmap.CompressFormat.JPEG, 100, baos);
             byte[] b = baos.toByteArray();
-            String encodedImage = "base64," + Base64.encodeToString(b, Base64.DEFAULT);
+            String encodedImage = "base64," + Base64.encodeToString(b, Base64.DEFAULT);*/
+            String encodedImage = record.getPhotoURL();
             String token = databaseAccess.getAuthenticationToken();
             JSONObject body = new JSONObject();
             try {

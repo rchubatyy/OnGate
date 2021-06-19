@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -85,10 +86,10 @@ public class RegisterActivity extends AppCompatActivity implements Response.List
     protected void onPause() {
         super.onPause();
 
-        /*ActivityManager activityManager = (ActivityManager) getApplicationContext()
+        ActivityManager activityManager = (ActivityManager) getApplicationContext()
                 .getSystemService(Context.ACTIVITY_SERVICE);
 
-        activityManager.moveTaskToFront(getTaskId(), 0);*/
+        activityManager.moveTaskToFront(getTaskId(), 0);
     }
 
     @Override
@@ -120,15 +121,11 @@ public class RegisterActivity extends AppCompatActivity implements Response.List
     }
 
     public void cancel(View v){
-        PackageManager pm = getApplicationContext().getPackageManager();
         Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
         mainIntent.addCategory(Intent.CATEGORY_HOME);
-        List<ResolveInfo> resolveInfos = pm.queryIntentActivities(mainIntent, 0);
-        for(ResolveInfo info : resolveInfos) {
-            String applicationInfo = info.activityInfo.packageName;
-            //...
-            System.out.println(applicationInfo);
-            //get package name, icon and label from applicationInfo object
+        List<ResolveInfo> pkgAppsList = getPackageManager().queryIntentActivities( mainIntent, 0);
+        for (ResolveInfo info: pkgAppsList){
+            System.out.println(info.activityInfo.packageName);
         }
         finishAffinity();
     }

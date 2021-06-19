@@ -55,6 +55,7 @@ public class UserPinActivity extends AppCompatActivity implements View.OnClickLi
 
     private static final String linkText = "https://www.olivs.app/ongate";
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,13 +76,26 @@ public class UserPinActivity extends AppCompatActivity implements View.OnClickLi
         userPinField = findViewById(R.id.userPIN);
         link = findViewById(R.id.link);
         Button[] keypad = new Button[10];
+        ok = findViewById(R.id.btnOK);
+        delete = findViewById(R.id.btnDelete);
         for (int i = 0; i < keypad.length; i++) {
             int id = getResources().getIdentifier("btn" + i, "id", getPackageName());
             keypad[i] = findViewById(id);
-
+            Button b = keypad[i];
+            b.post(new Runnable() {
+                @Override
+                public void run() {
+                    float size = b.getHeight() >> 2;
+                    b.setTextSize(size);
+                    ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) userPinField.getLayoutParams();
+                    params.width = (int) (size * 8);
+                    userPinField.setLayoutParams(params);
+                    userPinField.setTextSize(size);
+                    userPinField.setPadding(0,(int) -size/2,0, (int) -size/2);
+                    ok.setTextSize(size);
+                }
+            });
         }
-        ok = findViewById(R.id.btnOK);
-        delete = findViewById(R.id.btnDelete);
         for(Button button: keypad)
             button.setOnClickListener(this);
         ok.setOnClickListener(this);
@@ -89,7 +103,13 @@ public class UserPinActivity extends AppCompatActivity implements View.OnClickLi
         logo.setOnLongClickListener(adminListener);
         databaseAccess = DatabaseAccess.getInstance(this);
         companyName.setText(databaseAccess.queryDatabase("CompanyName"));
+
+        Intent intent = getIntent();
+        boolean adminMode = intent.getBooleanExtra("admin",false);
+        setAdminMode(adminMode);
     }
+
+
 
     @Override
     public void onResume() {
@@ -110,13 +130,13 @@ public class UserPinActivity extends AppCompatActivity implements View.OnClickLi
     protected void onPause() {
         super.onPause();
 
-        /*ActivityManager activityManager = (ActivityManager) getApplicationContext()
+        ActivityManager activityManager = (ActivityManager) getApplicationContext()
                 .getSystemService(Context.ACTIVITY_SERVICE);
 
-        activityManager.moveTaskToFront(getTaskId(), 0);*/
+        activityManager.moveTaskToFront(getTaskId(), 0);
     }
 
-    @Override
+    /*@Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
         if(!hasFocus) {
@@ -124,7 +144,7 @@ public class UserPinActivity extends AppCompatActivity implements View.OnClickLi
             Intent closeDialog = new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
             sendBroadcast(closeDialog);
         }
-    }
+    }*/
 
     @Override
     public void onClick(View view) {

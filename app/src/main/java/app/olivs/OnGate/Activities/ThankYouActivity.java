@@ -49,10 +49,10 @@ public class ThankYouActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
 
-        /*ActivityManager activityManager = (ActivityManager) getApplicationContext()
+        ActivityManager activityManager = (ActivityManager) getApplicationContext()
                 .getSystemService(Context.ACTIVITY_SERVICE);
 
-        activityManager.moveTaskToFront(getTaskId(), 0);*/
+        activityManager.moveTaskToFront(getTaskId(), 0);
     }
 
     @Override

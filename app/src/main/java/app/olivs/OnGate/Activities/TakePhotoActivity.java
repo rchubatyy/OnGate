@@ -38,6 +38,7 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.provider.Settings;
 import android.util.Base64;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.Size;
 import android.util.SparseIntArray;
@@ -181,6 +182,7 @@ public class TakePhotoActivity extends AppCompatActivity implements View.OnClick
         Intent intent = getIntent();
         userID = intent.getIntExtra("UserID",0);
         if(userID>0){
+            eventIDLabel.setVisibility(View.GONE);
             userFullName = intent.getStringExtra("UserFullName");
             welcome.setText(String.format("Welcome, %s\nClick the applicable button to proceed.", userFullName));
             notYou.setVisibility(View.VISIBLE);
@@ -217,10 +219,10 @@ public class TakePhotoActivity extends AppCompatActivity implements View.OnClick
         closeCamera();
         stopBackgroundThread();
         super.onPause();
-        /*ActivityManager activityManager = (ActivityManager) getApplicationContext()
+        ActivityManager activityManager = (ActivityManager) getApplicationContext()
                 .getSystemService(Context.ACTIVITY_SERVICE);
 
-        activityManager.moveTaskToFront(getTaskId(), 0);*/
+        activityManager.moveTaskToFront(getTaskId(), 0);
     }
 
     @Override
@@ -231,6 +233,8 @@ public class TakePhotoActivity extends AppCompatActivity implements View.OnClick
 
     @Override
     public void onClick(View view) {
+        eventIDLabel.setVisibility(View.GONE);
+        notYou.setVisibility(View.GONE);
         for (Button button: controlButtons)
             button.setEnabled(false);
         welcome.setText("Preparing photo...");
@@ -290,6 +294,7 @@ public class TakePhotoActivity extends AppCompatActivity implements View.OnClick
         CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
         try{
             ImageReader reader = ImageReader.newInstance(previewSize.getWidth(), previewSize.getHeight(), ImageFormat.JPEG, 1);
+            System.out.println(previewSize.getWidth() + "x" + previewSize.getHeight());
             List<Surface> outputSurfaces = new ArrayList<Surface>(2);
             outputSurfaces.add(reader.getSurface());
             outputSurfaces.add(new Surface(textureView.getSurfaceTexture()));
@@ -297,15 +302,14 @@ public class TakePhotoActivity extends AppCompatActivity implements View.OnClick
             captureBuilder.addTarget(reader.getSurface());
             captureBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
 
-            // Orientation - DOES NOT WORK
-
-            /*int deviceRotation = getWindowManager().getDefaultDisplay().getRotation();
+            // Orientation
+            int rotation = getWindowManager().getDefaultDisplay().getRotation();
+            //captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, ORIENTATIONS.get(-270));
+            // CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
+            captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, ORIENTATIONS.get(rotation));
             CameraCharacteristics cameraCharacteristics = manager.getCameraCharacteristics("" + cameraDevice.getId());
-            int sensorOrientation =  cameraCharacteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
-            int surfaceRotation = ORIENTATIONS.get(deviceRotation);
-            int jpegOrientation = (surfaceRotation + sensorOrientation + 270) % 360;
-            */
-            //captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, 270);
+            rotation = cameraCharacteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
+            captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, rotation);
 
             ImageReader.OnImageAvailableListener readerListener = new ImageReader.OnImageAvailableListener() {
                 @Override
@@ -319,28 +323,8 @@ public class TakePhotoActivity extends AppCompatActivity implements View.OnClick
                     checkIn(bitmapImage);
                     closeCamera();
                     image.close();
-                    //now we can create FileOutputStream and write something to file
-                    /*save(bytes);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } finally {
-                        if (image != null) {
-                            image.close();
-                        }
-                    }*/
                 }
 
-                /*private void save(byte[] bytes) throws IOException {
-                    OutputStream output = null;
-                    try {
-                        output = new FileOutputStream(finalMediaFile);
-                        output.write(bytes);
-                    } finally {
-                        if (null != output) {
-                            output.close();
-                        }
-                    }
-                }*/
             };
 
             reader.setOnImageAvailableListener(readerListener, backgroundHandler);
@@ -354,7 +338,6 @@ public class TakePhotoActivity extends AppCompatActivity implements View.OnClick
             cameraDevice.createCaptureSession(outputSurfaces, new CameraCaptureSession.StateCallback() {
                 @Override
                 public void onConfigured(CameraCaptureSession session) {
-                    System.out.println(captureBuilder.get(CaptureRequest.JPEG_ORIENTATION));
                     try {
                         session.capture(captureBuilder.build(), captureListener, backgroundHandler);
                     } catch (CameraAccessException e) {
@@ -394,11 +377,16 @@ public class TakePhotoActivity extends AppCompatActivity implements View.OnClick
 
     private void checkIn(Bitmap bitmapImage) {
         if (userID>0) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    welcome.setText("Uploading data...");
+                }
+            });
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            bitmapImage.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
+            bitmapImage.compress(Bitmap.CompressFormat.JPEG, 35, byteArrayOutputStream);
             byte[] imageBytes = byteArrayOutputStream.toByteArray();
             String imageInBase64 = "base64," + Base64.encodeToString(imageBytes, Base64.DEFAULT);
-            welcome.setText("Uploading data...");
             JSONObject body = new JSONObject();
             String token = databaseAccess.getAuthenticationToken();
             try {
@@ -424,9 +412,20 @@ public class TakePhotoActivity extends AppCompatActivity implements View.OnClick
 
     private void saveImage(Bitmap bitmapImage){
         int eventID = Integer.parseInt(databaseAccess.queryDatabase("EventID"));
-        CheckInRecord record = new CheckInRecord(userID, eventID, actionDateTime, "", false, state);
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        bitmapImage.compress(Bitmap.CompressFormat.JPEG, 50, byteArrayOutputStream);
+        byte[] imageBytes = byteArrayOutputStream.toByteArray();
+        System.out.println("Image size: " + imageBytes.length + " B");
+        String imageInBase64 = "base64," + Base64.encodeToString(imageBytes, Base64.DEFAULT);
+
+
+        CheckInRecord record = new CheckInRecord(userID, eventID, actionDateTime, imageInBase64, false, state);
+        databaseAccess.saveRecord(record);
+        showThankYou(false);
+
+
         //File directory = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), Config.IMAGE_DIRECTORY_NAME);
-        File directory = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), Config.IMAGE_DIRECTORY_NAME);
+        /*File directory = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), Config.IMAGE_DIRECTORY_NAME);
         if (!directory.exists()) {
             if (!directory.mkdirs()) {
                 databaseAccess.saveRecord(record);
@@ -452,22 +451,6 @@ public class TakePhotoActivity extends AppCompatActivity implements View.OnClick
                 e.printStackTrace();
             }
         showThankYou(false);
-        }
-
-        /*try {
-            photoFile.createNewFile();
-            FileOutputStream fos = null;
-            fos = new FileOutputStream(photoFile);
-            // Use the compress method on the BitMap object to write image to the OutputStream
-            bitmapImage.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                fos.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }*/
     }
 
@@ -600,11 +583,15 @@ public class TakePhotoActivity extends AppCompatActivity implements View.OnClick
                     if (map == null) {
                         continue;
                     }
-                    imageReader = ImageReader.newInstance(1024, 768,
+                    DisplayMetrics displayMetrics = new DisplayMetrics();
+                    getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+                    int screenHeight = displayMetrics.heightPixels;
+                    int screenWidth = displayMetrics.widthPixels;
+                    imageReader = ImageReader.newInstance(screenWidth, screenHeight,
                             ImageFormat.JPEG,2);
                     imageReader.setOnImageAvailableListener(
                             null, backgroundHandler);
-                    previewSize = new Size(1024, 768);
+                    previewSize = new Size(768, 1024);
                     this.cameraId = cameraId;
                 }
             }
@@ -627,7 +614,7 @@ public class TakePhotoActivity extends AppCompatActivity implements View.OnClick
             e.printStackTrace();
         }
         int rotation = getWindowManager().getDefaultDisplay().getRotation();
-        int cameraRotation = cameraCharacteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
+        assert cameraCharacteristics != null;
         Matrix matrix = new Matrix();
         RectF viewRect = new RectF(0, 0, viewWidth, viewHeight);
         RectF bufferRect = new RectF(0, 0, previewSize.getHeight(), previewSize.getWidth());
@@ -650,13 +637,6 @@ public class TakePhotoActivity extends AppCompatActivity implements View.OnClick
             matrix.postRotate(180, centerX, centerY);
         }
         textureView.setTransform(matrix);
-        System.out.println("Device rotation: "+ rotation);
-        System.out.println("Camera rotation: "+ cameraRotation);
-        int surfaceRotation = ORIENTATIONS.get(rotation);
-        System.out.println("Surface rotation: " + surfaceRotation);
-        int jpegOrientation = (surfaceRotation + cameraRotation + 270) % 360;
-        System.out.println("JPEG rotation: " + jpegOrientation);
-        System.out.println("JPEG rotation: " + getJpegOrientation(cameraCharacteristics, rotation));
 
     }
 

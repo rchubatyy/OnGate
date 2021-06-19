@@ -33,8 +33,7 @@ public class SplashScreenActivity extends AppCompatActivity {
         if ( token == null || token.equals(""))
             {
             intent = new Intent(this, RegisterActivity.class);
-            //"F9D1695C0AC676FB6773426B3A0DBF873AFEB2F8569ACB6410393D1B1FC1FBB8"
-            databaseAccess.setAuthenticationToken("F9D1695C0AC676FB6773426B3A0DBF873AFEB2F8569ACB6410393D1B1FC1FBB8");}
+            }
         else {
             intent = new Intent(this, UserPinActivity.class);
             intent.putExtra(AUTHENTICATION_TOKEN_KEY, token);
@@ -47,10 +46,10 @@ public class SplashScreenActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
 
-        /*ActivityManager activityManager = (ActivityManager) getApplicationContext()
+        ActivityManager activityManager = (ActivityManager) getApplicationContext()
                 .getSystemService(Context.ACTIVITY_SERVICE);
 
-        activityManager.moveTaskToFront(getTaskId(), 0);*/
+        activityManager.moveTaskToFront(getTaskId(), 0);
     }
 
     @Override
