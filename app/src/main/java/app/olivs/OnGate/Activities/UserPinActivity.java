@@ -3,6 +3,7 @@ package app.olivs.OnGate.Activities;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.res.ResourcesCompat;
 
 import android.app.ActivityManager;
 import android.content.Context;
@@ -52,6 +53,7 @@ public class UserPinActivity extends AppCompatActivity implements View.OnClickLi
     private Button ok, delete;
     private DatabaseAccess databaseAccess;
     private boolean isAdmin = false;
+    private String companyNameText;
 
     private static final String linkText = "https://www.olivs.app/ongate";
 
@@ -102,7 +104,8 @@ public class UserPinActivity extends AppCompatActivity implements View.OnClickLi
         delete.setOnClickListener(this);
         logo.setOnLongClickListener(adminListener);
         databaseAccess = DatabaseAccess.getInstance(this);
-        companyName.setText(databaseAccess.queryDatabase("CompanyName"));
+        companyNameText = databaseAccess.queryDatabase("CompanyName");
+        companyName.setText(companyNameText);
 
         Intent intent = getIntent();
         boolean adminMode = intent.getBooleanExtra("admin",false);
@@ -114,6 +117,7 @@ public class UserPinActivity extends AppCompatActivity implements View.OnClickLi
     @Override
     public void onResume() {
         super.onResume();
+        companyName.setText(companyNameText);
         enableInput();
         falseEntriesCount = 0;
         showPleaseEnterPinNow();
@@ -279,7 +283,7 @@ public class UserPinActivity extends AppCompatActivity implements View.OnClickLi
 
     private void showMessage(boolean isError, String message){
         pleaseEnterPin.setVisibility(View.VISIBLE);
-        pleaseEnterPin.setTextColor(isError ? Color.RED : Color.BLACK);
+        pleaseEnterPin.setTextColor(isError ? Color.RED : Color.WHITE);
         pleaseEnterPin.setText(message);
     }
 
@@ -290,7 +294,7 @@ public class UserPinActivity extends AppCompatActivity implements View.OnClickLi
     private void setAdminMode(boolean isAdmin){
         userPinField.setText("");
         this.isAdmin = isAdmin;
-        background.setBackgroundColor(isAdmin ? Color.GRAY : Color.WHITE);
+        background.setBackgroundColor(isAdmin ? Color.GRAY : ResourcesCompat.getColor(getResources(), R.color.colorBackground, null));
         welcomeMessage.setText(isAdmin ? "Admin mode" : "Welcome");
         link.setText(isAdmin ? databaseAccess.queryDatabase("SiteName") : linkText);
         background.setOnClickListener( isAdmin ? new View.OnClickListener(

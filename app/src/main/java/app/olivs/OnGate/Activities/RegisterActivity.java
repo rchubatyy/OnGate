@@ -195,7 +195,7 @@ public class RegisterActivity extends AppCompatActivity implements Response.List
 
     private void showMessage(boolean isError, String message){
         messageField.setVisibility(View.VISIBLE);
-        messageField.setTextColor(isError ? Color.RED : Color.BLACK);
+        messageField.setTextColor(isError ? Color.RED : Color.WHITE);
         messageField.setText(message);
     }
 

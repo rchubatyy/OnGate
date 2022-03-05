@@ -2,6 +2,8 @@ package app.olivs.OnGate.Activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -99,7 +101,8 @@ import static app.olivs.OnGate.App.Services.AUTHENTICATION_TOKEN_KEY;
 
 public class TakePhotoActivity extends AppCompatActivity implements View.OnClickListener, TextureView.SurfaceTextureListener, Response.Listener<JSONObject>, Response.ErrorListener {
 
-    private TextView welcome, eventIDLabel;
+    private ConstraintLayout background;
+    private TextView welcome/*, eventIDLabel*/;
     private Button notYou;
     private int userID;
     private String userFullName;
@@ -167,8 +170,9 @@ public class TakePhotoActivity extends AppCompatActivity implements View.OnClick
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_take_photo);
+        background = findViewById(R.id.background);
         welcome = findViewById(R.id.welcome);
-        eventIDLabel = findViewById(R.id.eventID);
+        //eventIDLabel = findViewById(R.id.eventID);
         notYou = findViewById(R.id.notYou);
         textureView = findViewById(R.id.textureView);
         controlButtons = new Button[4];
@@ -182,7 +186,7 @@ public class TakePhotoActivity extends AppCompatActivity implements View.OnClick
         Intent intent = getIntent();
         userID = intent.getIntExtra("UserID",0);
         if(userID>0){
-            eventIDLabel.setVisibility(View.GONE);
+            //eventIDLabel.setVisibility(View.GONE);
             userFullName = intent.getStringExtra("UserFullName");
             welcome.setText(String.format("Welcome, %s\nClick the applicable button to proceed.", userFullName));
             notYou.setVisibility(View.VISIBLE);
@@ -197,9 +201,13 @@ public class TakePhotoActivity extends AppCompatActivity implements View.OnClick
         else{
             userFullName = "";
             notYou.setVisibility(View.GONE);
-            welcome.setText(userID == 0 ? R.string.could_not_find_pin : R.string.could_not_connect_to_check_in);
+            String messageText = userID == 0 ? getResources().getString(R.string.could_not_find_pin) :
+                    getResources().getString(R.string.could_not_connect_to_check_in);
+            messageText += "\n";
             String eventID = databaseAccess.queryDatabase("EventID");
-            eventIDLabel.setText(eventID);
+            messageText += eventID;
+            welcome.setText(messageText);
+            //eventIDLabel.setText(eventID);
         }
     }
 
@@ -233,7 +241,7 @@ public class TakePhotoActivity extends AppCompatActivity implements View.OnClick
 
     @Override
     public void onClick(View view) {
-        eventIDLabel.setVisibility(View.GONE);
+        //eventIDLabel.setVisibility(View.GONE);
         notYou.setVisibility(View.GONE);
         for (Button button: controlButtons)
             button.setEnabled(false);
@@ -289,12 +297,12 @@ public class TakePhotoActivity extends AppCompatActivity implements View.OnClick
     protected void takePicture() {
 
         if (cameraDevice == null) {
+            showThankYou(false);
             return;
         }
         CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
         try{
-            ImageReader reader = ImageReader.newInstance(previewSize.getWidth(), previewSize.getHeight(), ImageFormat.JPEG, 1);
-            System.out.println(previewSize.getWidth() + "x" + previewSize.getHeight());
+            ImageReader reader = ImageReader.newInstance(previewSize.getHeight(), previewSize.getWidth(), ImageFormat.JPEG, 1);
             List<Surface> outputSurfaces = new ArrayList<Surface>(2);
             outputSurfaces.add(reader.getSurface());
             outputSurfaces.add(new Surface(textureView.getSurfaceTexture()));
@@ -319,7 +327,7 @@ public class TakePhotoActivity extends AppCompatActivity implements View.OnClick
                     byte[] bytes = new byte[buffer.capacity()];
                     buffer.get(bytes);
                     Bitmap bitmapImage = BitmapFactory.decodeByteArray(bytes, 0, bytes.length, null);
-                    bitmapImage = getResizedBitmap(bitmapImage, previewSize.getWidth(), previewSize.getHeight());
+                    bitmapImage = getResizedBitmap(bitmapImage, previewSize.getHeight(), previewSize.getWidth());
                     checkIn(bitmapImage);
                     closeCamera();
                     image.close();
@@ -341,6 +349,7 @@ public class TakePhotoActivity extends AppCompatActivity implements View.OnClick
                     try {
                         session.capture(captureBuilder.build(), captureListener, backgroundHandler);
                     } catch (CameraAccessException e) {
+                        showThankYou(false);
                         e.printStackTrace();
                     }
                 }
@@ -351,6 +360,7 @@ public class TakePhotoActivity extends AppCompatActivity implements View.OnClick
             }, backgroundHandler);
         } catch (CameraAccessException e) {
             e.printStackTrace();
+            showThankYou(false);
         }
     }
 
@@ -415,7 +425,6 @@ public class TakePhotoActivity extends AppCompatActivity implements View.OnClick
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         bitmapImage.compress(Bitmap.CompressFormat.JPEG, 50, byteArrayOutputStream);
         byte[] imageBytes = byteArrayOutputStream.toByteArray();
-        System.out.println("Image size: " + imageBytes.length + " B");
         String imageInBase64 = "base64," + Base64.encodeToString(imageBytes, Base64.DEFAULT);
 
 
@@ -591,7 +600,11 @@ public class TakePhotoActivity extends AppCompatActivity implements View.OnClick
                             ImageFormat.JPEG,2);
                     imageReader.setOnImageAvailableListener(
                             null, backgroundHandler);
-                    previewSize = new Size(768, 1024);
+                    previewSize = getPreviewSize(characteristics);
+                    ConstraintSet set = new ConstraintSet();
+                    set.clone(background);
+                    set.setDimensionRatio(R.id.textureView, "H,"+getAspectRatio(previewSize));
+                    set.applyTo(background);
                     this.cameraId = cameraId;
                 }
             }
@@ -600,6 +613,51 @@ public class TakePhotoActivity extends AppCompatActivity implements View.OnClick
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
+    }
+
+    private Size getPreviewSize(CameraCharacteristics characteristics){
+        Size[] allCameraSizes = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
+                .getOutputSizes(ImageFormat.JPEG);
+        String resolution = databaseAccess.queryDatabase("PhotoResolution");
+        String[] items = resolution.split("x");
+        if (items.length == 1)
+        return new Size(1024,768);
+        else {
+            try{
+                int a = Integer.parseInt(items[0]);
+                int b = Integer.parseInt(items[1]);
+                return new Size(Math.max(a,b),Math.min(a,b));
+            }
+            catch(NumberFormatException e) {
+                return new Size(1024,768);
+            }
+        }
+    }
+
+    private String getAspectRatio(Size size){
+        double width = (double) size.getWidth();
+        double height = (double) size.getHeight();
+        double ratio = (double) size.getWidth()/(double) size.getHeight();
+        double bestDelta = Double.MAX_VALUE;
+        int i = 1;
+        int j = 1;
+        int bestI = 0;
+        int bestJ = 0;
+
+        for (int iterations = 0; iterations < 100; iterations++) {
+            double delta = (double) i / (double) j - ratio;
+            if (delta < 0) i++;
+            else j++;
+
+            double newDelta = Math.abs((double) i / (double) j - ratio);
+            if (newDelta < bestDelta) {
+                bestDelta = newDelta;
+                bestI = i;
+                bestJ = j;
+            }
+        }
+        System.out.println(bestI + ":" + bestJ);
+        return bestI + ":" + bestJ;
     }
 
     private void configureTransform(int viewWidth, int viewHeight) {
@@ -616,14 +674,17 @@ public class TakePhotoActivity extends AppCompatActivity implements View.OnClick
         int rotation = getWindowManager().getDefaultDisplay().getRotation();
         assert cameraCharacteristics != null;
         Matrix matrix = new Matrix();
+        System.out.println(viewHeight + " x " + viewWidth);
         RectF viewRect = new RectF(0, 0, viewWidth, viewHeight);
-        RectF bufferRect = new RectF(0, 0, previewSize.getHeight(), previewSize.getWidth());
+        int transformWidth =  previewSize.getWidth();
+        int transformHeight = previewSize.getHeight();
+        RectF bufferRect = new RectF(0, 0, Math.min(transformWidth, transformHeight), Math.max(transformWidth, transformHeight));
         float centerX = viewRect.centerX();
         float centerY = viewRect.centerY();
         int angle = getJpegOrientation(cameraCharacteristics, rotation);
         bufferRect.offset(centerX - bufferRect.centerX(), centerY - bufferRect.centerY());
-        matrix.setRectToRect(viewRect, bufferRect, Matrix.ScaleToFit.FILL);
-        float scale = Math.max(
+        matrix.setRectToRect(viewRect, bufferRect, Matrix.ScaleToFit.CENTER);
+        float scale = Math.min(
                 (float) viewHeight / previewSize.getHeight(),
                 (float) viewWidth / previewSize.getWidth());
         if (isEmulator()) {
@@ -655,14 +716,14 @@ public class TakePhotoActivity extends AppCompatActivity implements View.OnClick
     }
 
 
-    static class CompareSizesByArea implements Comparator<Size> {
+    /*static class CompareSizesByArea implements Comparator<Size> {
         @Override
         public int compare(Size lhs, Size rhs) {
             // We cast here to ensure the multiplications won't overflow
             return Long.signum((long) lhs.getWidth() * lhs.getHeight() -
                     (long) rhs.getWidth() * rhs.getHeight());
         }
-    }
+    }*/
 
 
 

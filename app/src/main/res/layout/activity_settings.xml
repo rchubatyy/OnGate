@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorBackground"
     tools:context=".Activities.SettingsActivity">
 
     <include
@@ -33,7 +34,9 @@
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_marginStart="5dp"
+            android:layout_marginEnd="10dp"
             android:layout_weight="1"
+            android:background="@color/colorWhite"
             android:ems="10"
             android:gravity="center_horizontal|center_vertical|end"
             android:inputType="text" />
@@ -49,7 +52,7 @@
             android:text="Run"
             android:textAllCaps="false"
             android:textColor="@color/colorGray"
-            android:textSize="30sp" />
+            android:textSize="24sp" />
 
     </LinearLayout>
 
@@ -85,7 +88,7 @@
         android:scrollbars="vertical"
         android:text="TextView"
         android:textAlignment="viewStart"
-        android:textColor="@color/colorSecondaryDark"
+        android:textColor="@color/colorWhite"
         android:textSize="24sp"
         app:autoSizeMaxTextSize="24dp"
         app:autoSizeMinTextSize="12dp"

@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorBackground"
     tools:context=".Activities.RegisterActivity">
 
     <include
@@ -46,7 +47,7 @@
         android:gravity="center"
         android:lines="5"
         android:text="Welcome to Olivs OnGate. This app links with your Olivs web subscription. You need to first set this device up on your web portal and obtain your Registration PIN. Once this is done, enter the PIN below."
-        android:textColor="@color/colorBackground"
+        android:textColor="@color/colorWhite"
         android:textSize="24sp"
         app:autoSizeMaxTextSize="24sp"
         app:autoSizeMinTextSize="12sp"
@@ -65,7 +66,7 @@
         android:lines="1"
         android:maxLines="1"
         android:text="Go to registration instructions"
-        android:textColor="#5C6BC0"
+        android:textColor="#A5AFE3"
         android:textSize="18sp"
         app:autoSizeTextType="uniform"
         app:layout_constraintEnd_toEndOf="parent"
@@ -81,7 +82,7 @@
         android:gravity="center"
         android:lines="1"
         android:text="Read more about Olivs OnGate"
-        android:textColor="#5C6BC0"
+        android:textColor="#A5AFE3"
         android:textSize="18sp"
         app:autoSizeTextType="uniform"
         app:layout_constraintEnd_toEndOf="parent"
@@ -128,6 +129,7 @@
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_marginTop="30dp"
+        android:textColor="@color/colorWhite"
         android:textSize="24sp"
         app:autoSizeMinTextSize="12sp"
         app:autoSizeTextType="uniform"

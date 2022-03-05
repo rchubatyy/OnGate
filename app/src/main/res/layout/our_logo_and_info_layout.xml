@@ -5,4 +5,4 @@
     android:id="@+id/logo"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    app:srcCompat="@drawable/primary_logo_rgb_small" />
+    app:srcCompat="@drawable/primary_logo_semi_reversed_rgb" />

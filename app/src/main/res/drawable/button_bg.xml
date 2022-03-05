@@ -6,8 +6,8 @@
                         <stroke android:width="1dip"
                             android:color="@color/colorGray" />
                         <gradient android:angle="-90"
-                            android:startColor="#d3d3d3"
-                            android:endColor="#d3d3d3"  />
+                            android:startColor="#fff"
+                            android:endColor="#95ab26"  />
                 </shape>
         </item>
         <item android:state_focused="true">
@@ -15,7 +15,7 @@
                         <corners android:radius="1dip" />
                         <stroke android:width="1dip"
                             android:color="@color/colorGray" />
-                        <solid android:color="#d3d3d3"/>
+                        <solid android:color="#95ab26"/>
                 </shape>
         </item>
         <item>
@@ -25,8 +25,8 @@
                             android:width="1dip"
                             android:color="@color/colorGray"/>
                         <gradient android:angle="-90"
-                            android:startColor="#FFF"
-                            android:endColor="#FFF" />
+                            android:startColor="#95ab26"
+                            android:endColor="#95ab26" />
                 </shape>
         </item>
 </selector>

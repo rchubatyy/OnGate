@@ -5,6 +5,7 @@
     android:id="@+id/background"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorBackground"
     tools:context=".Activities.UserPinActivity">
 
         <include
@@ -49,7 +50,7 @@
             android:layout_marginEnd="20dp"
             android:gravity="center"
             android:text="Please enter your PIN"
-            android:textColor="@android:color/black"
+            android:textColor="@color/colorWhite"
             android:textSize="30sp"
             app:autoSizeMinTextSize="14dp"
             app:autoSizeTextType="uniform"
@@ -67,7 +68,7 @@
             android:layout_marginEnd="20dp"
             android:gravity="center"
             android:text="Company Name"
-            android:textColor="@android:color/black"
+            android:textColor="@color/colorWhite"
             android:textSize="28sp"
             app:autoSizeMinTextSize="14dp"
             app:autoSizeTextType="uniform"
@@ -85,7 +86,7 @@
             android:layout_marginEnd="20dp"
             android:gravity="center"
             android:text="Welcome"
-            android:textColor="@android:color/black"
+            android:textColor="@color/colorWhite"
             android:textSize="28sp"
             app:autoSizeMinTextSize="14dp"
             app:autoSizeTextType="uniform"
@@ -296,6 +297,7 @@
             android:layout_marginEnd="10dp"
             android:layout_marginBottom="10dp"
             android:text="https://www.olivs.app/ongate"
+            android:textColor="@color/colorWhite"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
